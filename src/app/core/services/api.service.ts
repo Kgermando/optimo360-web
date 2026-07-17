@@ -13,6 +13,7 @@ import {
   JournalEntry,
   Operation,
   OTPResponse,
+  Parametre,
   Prestation,
   Produit,
   User,
@@ -147,11 +148,20 @@ export class ApiService {
     );
   }
 
-  getJournal(limit = 50, offset = 0, entrepriseUuid?: string) {
-    let params = new HttpParams().set('limit', limit).set('offset', offset);
+  getJournal(limit?: number, offset = 0, entrepriseUuid?: string) {
+    let params = new HttpParams().set('offset', offset);
+    if (limit != null) params = params.set('limit', limit);
     if (entrepriseUuid) params = params.set('entreprise_uuid', entrepriseUuid);
     return this.http.get<{ data: JournalEntry[]; total: number }>(`${this.base}/journal`, {
       params,
     });
+  }
+
+  getParametres() {
+    return this.http.get<Parametre>(`${this.base}/parametres`);
+  }
+
+  updateParametres(data: Partial<Parametre>) {
+    return this.http.put<Parametre>(`${this.base}/parametres`, data);
   }
 }

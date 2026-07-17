@@ -59,7 +59,7 @@ export const routes: Routes = [
       {
         path: 'parametres',
         loadComponent: () => import('./features/parametres/parametres').then((m) => m.ParametresComponent),
-        canActivate: [roleGuard('manager')],
+        canActivate: [roleGuard('super_admin', 'admin', 'manager')],
       },
     ],
   },

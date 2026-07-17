@@ -1,3 +1,19 @@
+.config-card {
+  margin-bottom: 16px;
+}
+
+.config-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+  align-items: start;
+
+  button {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+}
+
 .settings-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));

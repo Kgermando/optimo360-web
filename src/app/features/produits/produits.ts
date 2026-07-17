@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiService } from '../../core/services/api.service';
-import { DEVISES, Produit } from '../../core/models';
+import { DEVISES, PRODUCT_UNITS, Produit } from '../../core/models';
 
 @Component({
   selector: 'app-produits',
@@ -35,6 +35,7 @@ export class ProduitsComponent implements OnInit {
   private snack = inject(MatSnackBar);
 
   devises = DEVISES;
+  unites = PRODUCT_UNITS;
   produits = signal<Produit[]>([]);
   showForm = signal(false);
   columns = ['code', 'nom', 'prix_unitaire', 'devise', 'quantite_stock', 'unite'];
@@ -68,5 +69,9 @@ export class ProduitsComponent implements OnInit {
       },
       error: (err) => this.snack.open(err.error?.error || 'Erreur', 'OK', { duration: 5000 }),
     });
+  }
+
+  unitLabel(value: string): string {
+    return this.unites.find((u) => u.value === value)?.label ?? value;
   }
 }

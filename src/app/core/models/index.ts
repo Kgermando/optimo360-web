@@ -234,7 +234,35 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface Parametre {
+  uuid: string;
+  entreprise_uuid?: string | null;
+  otp_expiration_minutes: number;
+  otp_code_length: number;
+  jwt_expiration_hours: number;
+  password_min_length: number;
+  journal_page_size: number;
+  default_seuil_fc: number;
+  default_seuil_usd: number;
+}
+
 export const COUPURES_FC = [500, 1000, 2000, 5000, 10000, 20000];
 export const COUPURES_USD = [1, 5, 10, 20, 50, 100];
 export const DEVISES = ['FC', 'USD'] as const;
 export type Devise = (typeof DEVISES)[number];
+
+export const PRODUCT_UNITS = [
+  { value: 'unité', label: 'Unité (pièce)' },
+  { value: 'kg', label: 'Kilogramme (kg)' },
+  { value: 'g', label: 'Gramme (g)' },
+  { value: 'L', label: 'Litre (L)' },
+  { value: 'mL', label: 'Millilitre (mL)' },
+  { value: 'm', label: 'Mètre (m)' },
+  { value: 'cm', label: 'Centimètre (cm)' },
+  { value: 'paquet', label: 'Paquet' },
+  { value: 'carton', label: 'Carton' },
+  { value: 'boîte', label: 'Boîte' },
+  { value: 'sac', label: 'Sac' },
+  { value: 'bouteille', label: 'Bouteille' },
+  { value: 'lot', label: 'Lot' },
+] as const;

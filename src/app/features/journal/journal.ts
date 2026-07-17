@@ -22,7 +22,7 @@ export class JournalComponent implements OnInit {
   columns = ['created_at', 'user', 'action', 'description'];
 
   ngOnInit() {
-    this.api.getJournal(100).subscribe({
+    this.api.getJournal().subscribe({
       next: (res) => {
         this.entries.set(res.data);
         this.total.set(res.total);
