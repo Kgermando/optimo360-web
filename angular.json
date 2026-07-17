@@ -41,10 +41,10 @@
       "architect": {
         "build": {
           "builder": "@angular/build:application",
-          "options": {
+          "options": { 
             "outputPath": {
-              "base": "dist/optimo360-web",
-              "browser": "browser"
+              "base": "browser",
+              "browser": ""
             },
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
