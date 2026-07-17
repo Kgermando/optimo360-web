@@ -1,0 +1,19 @@
+.form-card { margin: 16px 0; }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+h3 {  color: var(--optimo-primary);
+  margin: 16px 0 8px;
+}
+.hint {
+  color: #666;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+mat-divider {
+  margin: 16px 0;
+}

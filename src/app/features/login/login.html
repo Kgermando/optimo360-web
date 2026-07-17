@@ -1,0 +1,54 @@
+<div class="login-page">
+  <div class="login-card">
+    <div class="brand">
+      <img src="/images/logo.png" alt="Optimo 360" class="logo" />
+      <h1>Optimo 360</h1>
+      <p>Gestion de trésorerie multi-devises</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" [class.was-submitted]="submitted()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email" />
+        <mat-icon matPrefix>email</mat-icon>
+        @if (submitted() && form.get('email')?.invalid) {
+          <mat-error>Email valide requis</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Mot de passe</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          [type]="hidePassword() ? 'password' : 'text'"
+          autocomplete="current-password"
+        />
+        <mat-icon matPrefix>lock</mat-icon>
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" tabindex="-1">
+          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (submitted() && form.get('password')?.invalid) {
+          <mat-error>Mot de passe requis</mat-error>
+        }
+      </mat-form-field>
+
+      @if (error()) {
+        <div class="error-banner">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      @if (loading()) {
+        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" disabled>
+          <mat-spinner diameter="20" />
+        </button>
+      } @else {
+        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit">
+          Se connecter
+        </button>
+      }
+    </form>
+  </div>
+</div>

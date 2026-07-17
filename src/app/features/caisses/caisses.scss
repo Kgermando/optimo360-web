@@ -1,0 +1,114 @@
+.main-card {
+  margin-bottom: 24px;
+
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.main-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .solde {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--optimo-primary);
+  }
+}
+
+.caisses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+mat-card.locked {
+  border-left: 4px solid var(--optimo-danger);
+}
+
+.caisse-stats {
+  display: flex;
+  gap: 24px;
+  margin: 12px 0;
+
+  small {
+    display: block;
+    color: #666;
+    font-size: 11px;
+  }
+
+  strong {
+    font-size: 18px;
+    color: var(--optimo-primary);
+  }
+}
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 8px;
+
+  &.wide { max-width: 520px; }
+}
+
+.billetterie-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.billet-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #e8f5e9;
+  border-radius: 8px;
+  color: var(--optimo-primary);
+}
+
+.billets-grid {
+  max-height: 240px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.billet-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.billet-qty {
+  width: 90px;
+}
+
+.billet-hint {
+  font-size: 13px;
+  color: #666;
+  margin: 8px 0;
+}
+
+.retrait-total {
+  font-size: 16px;
+  color: var(--optimo-primary);
+  margin: 12px 0;
+}
+
+.full-width {
+  width: 100%;
+}

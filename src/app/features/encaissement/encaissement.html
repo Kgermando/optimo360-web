@@ -1,0 +1,171 @@
+<div class="page-header">
+  <h1>Encaissement</h1>
+  <p>Enregistrer une vente avec billetterie FC et USD</p>
+</div>
+
+@if (selectedCaisse()?.is_locked) {
+  <div class="lock-banner">
+    <mat-icon>lock</mat-icon>
+    Caisse verrouillée — Seuil atteint. Transfert et OTP requis pour continuer.
+  </div>
+}
+
+<div class="encaissement-grid">
+  <div class="left-panel">
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Caisse</mat-label>
+            <mat-select formControlName="caisse_uuid">
+              @for (c of caisses(); track c.uuid) {
+                <mat-option [value]="c.uuid">
+                  {{ c.nom }} — {{ c.solde_fc | number:'1.0-0' }} FC / {{ c.solde_usd | number:'1.0-0' }} USD
+                  @if (c.is_locked) { (Verrouillée) }
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>account_balance_wallet</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Client (optionnel)</mat-label>
+            <input matInput formControlName="client_nom" />
+            <mat-icon matPrefix>person</mat-icon>
+          </mat-form-field>
+        </form>
+
+        <mat-tab-group>
+          <mat-tab label="Produits">
+            <div class="item-grid">
+              @for (p of produits(); track p.uuid) {
+                <button mat-stroked-button class="item-btn" (click)="addProduit(p)" [disabled]="p.quantite_stock <= 0">
+                  <mat-icon>inventory_2</mat-icon>
+                  <span>{{ p.nom }}</span>
+                  <small>{{ p.prix_unitaire | number:'1.0-0' }} {{ p.devise }} ({{ p.quantite_stock }})</small>
+                </button>
+              }
+            </div>
+          </mat-tab>
+          <mat-tab label="Prestations">
+            <div class="item-grid">
+              @for (p of prestations(); track p.uuid) {
+                <button mat-stroked-button class="item-btn" (click)="addPrestation(p)">
+                  <mat-icon>handyman</mat-icon>
+                  <span>{{ p.nom }}</span>
+                  <small>{{ p.prix | number:'1.0-0' }} {{ p.devise }}</small>
+                </button>
+              }
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="right-panel">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Panier</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (cart().length === 0) {
+          <p class="empty-cart">
+            <mat-icon>shopping_cart</mat-icon>
+            Panier vide
+          </p>
+        } @else {
+          @for (item of cart(); track item.item_uuid; let i = $index) {
+            <div class="cart-item">
+              <div>
+                <strong>{{ item.nom }}</strong>
+                <small>{{ item.quantite }} x {{ item.prix | number:'1.0-0' }} {{ item.devise }}</small>
+              </div>
+              <div class="cart-actions">
+                <span>{{ item.prix * item.quantite | number:'1.0-0' }} {{ item.devise }}</span>
+                <button mat-icon-button (click)="removeItem(i)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        }
+
+        <div class="cart-total">
+          @if (totalFC() > 0) {
+            <div>Total FC: <strong>{{ totalFC() | number:'1.0-0' }} FC</strong></div>
+          }
+          @if (totalUSD() > 0) {
+            <div>Total USD: <strong>{{ totalUSD() | number:'1.0-0' }} USD</strong></div>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="billetterie-card">
+      <mat-card-header>
+        <mat-card-title>Billetterie reçue</mat-card-title>
+        <mat-card-subtitle>Saisissez les billets du client</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-tab-group>
+          <mat-tab label="Francs (FC)">
+            <div class="billets-grid">
+              @for (b of billetsFC(); track b.valeur; let i = $index) {
+                <div class="billet-row">
+                  <span class="billet-label">{{ b.valeur | number:'1.0-0' }} FC</span>
+                  <mat-form-field appearance="outline" class="billet-qty">
+                    <input matInput type="number" min="0" [value]="b.quantite"
+                      (input)="updateBilletFC(i, +($any($event.target).value))" />
+                  </mat-form-field>
+                </div>
+              }
+              <div class="billet-total">Reçu: <strong>{{ paidFC() | number:'1.0-0' }} FC</strong>
+                @if (totalFC() > 0) { / {{ totalFC() | number:'1.0-0' }} FC }
+              </div>
+            </div>
+          </mat-tab>
+          <mat-tab label="Dollars (USD)">
+            <div class="billets-grid">
+              @for (b of billetsUSD(); track b.valeur; let i = $index) {
+                <div class="billet-row">
+                  <span class="billet-label">{{ b.valeur | number:'1.0-0' }} USD</span>
+                  <mat-form-field appearance="outline" class="billet-qty">
+                    <input matInput type="number" min="0" [value]="b.quantite"
+                      (input)="updateBilletUSD(i, +($any($event.target).value))" />
+                  </mat-form-field>
+                </div>
+              }
+              <div class="billet-total">Reçu: <strong>{{ paidUSD() | number:'1.0-0' }} USD</strong>
+                @if (totalUSD() > 0) { / {{ totalUSD() | number:'1.0-0' }} USD }
+              </div>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
+
+        @if (loading()) {
+          <button mat-raised-button color="primary" class="full-width encaisse-btn" disabled>
+            <mat-spinner diameter="20" />
+          </button>
+        } @else {
+          <button
+            mat-raised-button
+            color="primary"
+            class="full-width encaisse-btn"
+            [disabled]="cart().length === 0 || selectedCaisse()?.is_locked || !paymentValid()"
+            (click)="encaisser()"
+          >
+            <mat-icon>payments</mat-icon>
+            Encaisser
+          </button>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+@if (printData()) {
+  <div class="print-hidden">
+    <app-receipt-print [data]="printData()!" />
+  </div>
+}

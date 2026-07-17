@@ -1,0 +1,62 @@
+<div class="print-area">
+  <div class="receipt">
+    <div class="receipt-header">
+      <img src="/images/logo.png" alt="Optimo 360" class="receipt-logo" />
+      <h2>OPTIMO 360</h2>
+      <p>{{ data().entreprise }}</p>
+      <p class="receipt-type">Reçu d'encaissement</p>
+    </div>
+
+    <div class="receipt-info">
+      <p><strong>Réf:</strong> {{ data().reference }}</p>
+      <p><strong>Date:</strong> {{ data().date | date:'dd/MM/yyyy HH:mm' }}</p>
+      <p><strong>Agent:</strong> {{ data().agent }}</p>
+      @if (data().client) {
+        <p><strong>Client:</strong> {{ data().client }}</p>
+      }
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Qté</th>
+          <th>P.U.</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (l of data().lignes; track l.nom) {
+          <tr>
+            <td>{{ l.nom }}</td>
+            <td>{{ l.quantite }}</td>
+            <td>{{ l.prix | number:'1.0-0' }} {{ l.devise }}</td>
+            <td>{{ l.montant | number:'1.0-0' }} {{ l.devise }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="receipt-total">
+      @if (data().montant_fc > 0) {
+        <div>TOTAL FC: {{ data().montant_fc | number:'1.0-0' }}</div>
+      }
+      @if (data().montant_usd > 0) {
+        <div>TOTAL USD: {{ data().montant_usd | number:'1.0-0' }}</div>
+      }
+    </div>
+
+    @if (data().billets?.length) {
+      <div class="receipt-billets">
+        <strong>Billets reçus:</strong>
+        @for (b of data().billets; track b.valeur + b.devise) {
+          <div>{{ b.quantite }}× {{ b.valeur | number:'1.0-0' }} {{ b.devise }}</div>
+        }
+      </div>
+    }
+
+    <div class="receipt-footer">
+      Merci pour votre confiance — Optimo 360
+    </div>
+  </div>
+</div>

@@ -1,0 +1,74 @@
+<div class="page-shell">
+  <div class="page-header">
+    <h1>Mon profil</h1>
+    <p>Informations de votre compte connecté</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else if (user()) {
+    <div class="profil-grid">
+      <mat-card class="profil-card main">
+        <div class="profil-hero">
+          <div class="avatar-lg"><mat-icon>person</mat-icon></div>
+          <div>
+            <h2>{{ user()!.full_name }}</h2>
+            <span class="role-tag">{{ roleLabel(user()!.role) }}</span>
+          </div>
+        </div>
+        <div class="profil-details">
+          <div class="detail-row">
+            <mat-icon>email</mat-icon>
+            <div>
+              <small>Email</small>
+              <strong>{{ user()!.email }}</strong>
+            </div>
+          </div>
+          <div class="detail-row">
+            <mat-icon>phone</mat-icon>
+            <div>
+              <small>Téléphone</small>
+              <strong>{{ user()!.phone }}</strong>
+            </div>
+          </div>
+          <div class="detail-row">
+            <mat-icon>verified</mat-icon>
+            <div>
+              <small>Statut</small>
+              <strong>{{ user()!.status === 'active' ? 'Actif' : user()!.status }}</strong>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      @if (user()!.entreprise) {
+        <mat-card class="profil-card">
+          <h3>Entreprise</h3>
+          <div class="profil-details">
+            <div class="detail-row">
+              <mat-icon>business</mat-icon>
+              <div>
+                <small>Raison sociale</small>
+                <strong>{{ user()!.entreprise!.name }}</strong>
+              </div>
+            </div>
+            <div class="detail-row">
+              <mat-icon>location_on</mat-icon>
+              <div>
+                <small>Adresse</small>
+                <strong>{{ user()!.entreprise!.adresse }}</strong>
+              </div>
+            </div>
+            <div class="detail-row">
+              <mat-icon>call</mat-icon>
+              <div>
+                <small>Contact</small>
+                <strong>{{ user()!.entreprise!.telephone }}</strong>
+              </div>
+            </div>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+</div>

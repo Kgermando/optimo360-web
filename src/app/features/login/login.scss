@@ -1,0 +1,81 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(160deg, #f4f8f5 0%, #eef3ef 50%, #f7f9f6 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 40px 36px 36px;
+  box-shadow: 0 8px 32px rgba(31, 90, 50, 0.06);
+}
+
+.brand {
+  text-align: center;
+  margin-bottom: 32px;
+
+  .logo {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--optimo-text);
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 6px 0 0;
+    font-size: 14px;
+    color: var(--optimo-text-muted);
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-btn {
+  margin-top: 4px;
+  height: 46px !important;
+  font-size: 15px !important;
+  font-weight: 500 !important;
+  border-radius: 12px !important;
+}
+
+.error-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fef7f7;
+  color: var(--optimo-danger);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+form:not(.was-submitted) {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+}

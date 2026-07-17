@@ -1,0 +1,229 @@
+<div class="page-header">
+  <h1>Gestion des caisses</h1>
+  <p>Caisses agent, caisse principale et billetterie FC/USD</p>
+</div>
+
+@if (loading()) {
+  <mat-spinner />
+} @else {
+  @if (auth.hasRole('admin', 'manager') && caissesMain().length) {
+    <mat-card class="main-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>account_balance</mat-icon> Caisse principale
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (m of caissesMain(); track m.uuid) {
+          <div class="main-info">
+            <strong>{{ m.nom }}</strong>
+            <span class="solde">{{ m.solde_fc | number:'1.0-0' }} FC / {{ m.solde_usd | number:'1.0-0' }} USD</span>
+            <button mat-stroked-button (click)="viewMainBilletterie(m)">
+              <mat-icon>payments</mat-icon> Billetterie
+            </button>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <h3>Caisses agent</h3>
+  <div class="caisses-grid">
+    @for (c of caissesAgent(); track c.uuid) {
+      <mat-card [class.locked]="c.is_locked">
+        <mat-card-header>
+          <mat-card-title>{{ c.nom }}</mat-card-title>
+          <mat-card-subtitle>{{ c.agent?.full_name }}</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="caisse-stats">
+            <div>
+              <small>Solde FC</small>
+              <strong>{{ c.solde_fc | number:'1.0-0' }} FC</strong>
+            </div>
+            <div>
+              <small>Solde USD</small>
+              <strong>{{ c.solde_usd | number:'1.0-0' }} USD</strong>
+            </div>
+            <div>
+              <small>Seuil FC</small>
+              <strong>{{ c.seuil_fc | number:'1.0-0' }}</strong>
+            </div>
+            <div>
+              <small>Seuil USD</small>
+              <strong>{{ c.seuil_usd | number:'1.0-0' }}</strong>
+            </div>
+          </div>
+
+          @if (c.is_locked) {
+            <div class="locked-badge">
+              <mat-icon>lock</mat-icon> Verrouillée
+              @if (c.locked_at) {
+                <small>depuis {{ c.locked_at | date:'dd/MM HH:mm' }}</small>
+              }
+            </div>
+          } @else {
+            <div class="unlocked-badge">
+              <mat-icon>lock_open</mat-icon> Active
+            </div>
+          }
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button (click)="viewBilletterie(c)">
+            <mat-icon>payments</mat-icon> Billetterie
+          </button>
+          @if (auth.hasRole('admin', 'manager')) {
+            @if (c.is_locked && hasSolde(c)) {
+              <button mat-button color="primary" (click)="transfer(c)">
+                <mat-icon>swap_horiz</mat-icon> Transférer
+              </button>
+            }
+            @if (c.is_locked) {
+              <button mat-button (click)="generateUnlockOTP(c)">
+                <mat-icon>vpn_key</mat-icon> OTP déverrouillage
+              </button>
+            }
+          }
+          @if (auth.hasRole('agent')) {
+            @if (c.is_locked) {
+              <button mat-button color="primary" (click)="openUnlock(c)">
+                <mat-icon>lock_open</mat-icon> Déverrouiller
+              </button>
+            }
+            @if (!c.is_locked) {
+              <button mat-button (click)="openRetrait(c)">
+                <mat-icon>money_off</mat-icon> Retrait
+              </button>
+            }
+          }
+        </mat-card-actions>
+      </mat-card>
+    }
+  </div>
+}
+
+@if (showBilletterieDialog()) {
+  <div class="dialog-overlay" (click)="showBilletterieDialog.set(false)">
+    <mat-card class="dialog-card wide" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>Billetterie</mat-card-title>
+        @if (billetterie()) {
+          <mat-card-subtitle>
+            {{ billetterie()!.solde_fc | number:'1.0-0' }} FC —
+            {{ billetterie()!.solde_usd | number:'1.0-0' }} USD
+          </mat-card-subtitle>
+        }
+      </mat-card-header>
+      <mat-card-content>
+        @if (billetterie()) {
+          <div class="billetterie-list">
+            @for (b of billetterie()!.billets; track b.valeur + b.devise) {
+              @if (b.quantite > 0) {
+                <div class="billet-item">
+                  <strong>{{ b.quantite }}×</strong> {{ b.valeur | number:'1.0-0' }} {{ b.devise }}
+                  <span>= {{ b.valeur * b.quantite | number:'1.0-0' }} {{ b.devise }}</span>
+                </div>
+              }
+            }
+            @if (!hasBillets()) {
+              <p>Aucun billet en caisse</p>
+            }
+          </div>
+        }
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="showBilletterieDialog.set(false)">Fermer</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
+
+@if (showUnlockDialog()) {
+  <div class="dialog-overlay" (click)="showUnlockDialog.set(false)">
+    <mat-card class="dialog-card" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>Déverrouiller la caisse</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p>Entrez l'OTP reçu du manager :</p>
+        <form [formGroup]="unlockForm">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Code OTP</mat-label>
+            <input matInput formControlName="otp_code" />
+            <mat-icon matPrefix>vpn_key</mat-icon>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="showUnlockDialog.set(false)">Annuler</button>
+        <button mat-raised-button color="primary" (click)="unlock()">Valider</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}
+
+@if (showRetraitDialog()) {
+  <div class="dialog-overlay" (click)="showRetraitDialog.set(false)">
+    <mat-card class="dialog-card wide" (click)="$event.stopPropagation()">
+      <mat-card-header>
+        <mat-card-title>Retrait d'argent</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form [formGroup]="retraitForm">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Devise</mat-label>
+            <mat-select [value]="retraitDevise()" (selectionChange)="retraitDevise.set($event.value)">
+              <mat-option value="FC">Francs (FC)</mat-option>
+              <mat-option value="USD">Dollars (USD)</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <p class="billet-hint">Indiquez les billets à remettre au client :</p>
+          <div class="billets-grid">
+            @if (retraitDevise() === 'FC') {
+              @for (b of retraitBilletsFC(); track b.valeur; let i = $index) {
+                <div class="billet-row">
+                  <span>{{ b.valeur | number:'1.0-0' }} FC</span>
+                  <mat-form-field appearance="outline" class="billet-qty">
+                    <input matInput type="number" min="0" [value]="b.quantite"
+                      (input)="updateRetraitBillet(i, +($any($event.target).value))" />
+                  </mat-form-field>
+                </div>
+              }
+            } @else {
+              @for (b of retraitBilletsUSD(); track b.valeur; let i = $index) {
+                <div class="billet-row">
+                  <span>{{ b.valeur | number:'1.0-0' }} USD</span>
+                  <mat-form-field appearance="outline" class="billet-qty">
+                    <input matInput type="number" min="0" [value]="b.quantite"
+                      (input)="updateRetraitBillet(i, +($any($event.target).value))" />
+                  </mat-form-field>
+                </div>
+              }
+            }
+          </div>
+
+          <div class="retrait-total">
+            Total: <strong>{{ retraitBilletTotal() | number:'1.0-0' }} {{ retraitDevise() }}</strong>
+          </div>
+
+          <button mat-stroked-button type="button" (click)="requestRetraitOTP()" class="full-width">
+            <mat-icon>vpn_key</mat-icon> Demander OTP au manager
+          </button>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Code OTP</mat-label>
+            <input matInput formControlName="otp_code" />
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Motif</mat-label>
+            <input matInput formControlName="motif" />
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <mat-card-actions align="end">
+        <button mat-button (click)="showRetraitDialog.set(false)">Annuler</button>
+        <button mat-raised-button color="primary" (click)="retrait()">Retirer</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+}

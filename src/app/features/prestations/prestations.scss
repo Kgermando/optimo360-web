@@ -1,0 +1,22 @@
+.form-card { margin: 16px 0; }
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 8px;
+  align-items: center;
+}
+
+.devise-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--optimo-primary-light);
+  color: var(--optimo-primary);
+
+  &.usd {
+    background: #eef4fb;
+    color: #2a6fad;
+  }
+}

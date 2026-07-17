@@ -1,0 +1,78 @@
+<div class="page-shell">
+  <div class="page-header">
+    <h1>Paramètres</h1>
+    <p>Configuration de votre espace manager</p>
+  </div>
+
+  @if (loading()) {
+    <div class="loading-center"><mat-spinner /></div>
+  } @else {
+    <div class="settings-grid">
+      <mat-card class="settings-card">
+        <div class="card-head">
+          <mat-icon>account_balance_wallet</mat-icon>
+          <div>
+            <h3>Seuils des caisses</h3>
+            <p>Définissez les montants de verrouillage automatique FC et USD</p>
+          </div>
+        </div>
+        <mat-card-content>
+          @if (caisses().length) {
+            @for (c of caisses(); track c.uuid) {
+              <div class="caisse-row">
+                <div>
+                  <strong>{{ c.nom }}</strong>
+                  <small>{{ c.agent?.full_name }}</small>
+                </div>
+                <div class="seuils">
+                  <span>FC: {{ c.seuil_fc | number:'1.0-0' }}</span>
+                  <span>USD: {{ c.seuil_usd | number:'1.0-0' }}</span>
+                </div>
+              </div>
+            }
+          } @else {
+            <p class="empty">Aucune caisse agent configurée</p>
+          }
+          <a mat-stroked-button routerLink="/caisses" class="action-btn">
+            <mat-icon>tune</mat-icon>
+            Gérer les caisses
+          </a>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="settings-card">
+        <div class="card-head">
+          <mat-icon>inventory_2</mat-icon>
+          <div>
+            <h3>Catalogue</h3>
+            <p>Produits et prestations de votre entreprise</p>
+          </div>
+        </div>
+        <mat-card-content class="actions">
+          <a mat-stroked-button routerLink="/produits">
+            <mat-icon>inventory_2</mat-icon> Produits
+          </a>
+          <a mat-stroked-button routerLink="/prestations">
+            <mat-icon>handyman</mat-icon> Prestations
+          </a>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="settings-card">
+        <div class="card-head">
+          <mat-icon>people</mat-icon>
+          <div>
+            <h3>Équipe</h3>
+            <p>Gestion des agents et comptes</p>
+          </div>
+        </div>
+        <mat-card-content>
+          <a mat-stroked-button routerLink="/users" class="action-btn">
+            <mat-icon>group</mat-icon>
+            Gérer les utilisateurs
+          </a>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

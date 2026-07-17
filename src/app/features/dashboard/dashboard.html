@@ -1,0 +1,279 @@
+@if (loading()) {
+  <div class="page-shell loading-center"><mat-spinner /></div>
+} @else if (stats()) {
+<div class="page-shell dashboard-page">
+  <section class="welcome-strip">
+    <h1>Bonjour, {{ auth.currentUser()?.full_name }}</h1>
+    <p>Vue d'ensemble de votre entreprise</p>
+    <div class="meta-chips">
+      <span><mat-icon>receipt_long</mat-icon> {{ stats()!.nb_operations }} opérations</span>
+      <span><mat-icon>people</mat-icon> {{ stats()!.nb_agents }} agent(s)</span>
+      @if (stats()!.caisses_verrouillees > 0) {
+        <span class="alert"><mat-icon>lock</mat-icon> {{ stats()!.caisses_verrouillees }} caisse(s) verrouillée(s)</span>
+      }
+    </div>
+  </section>
+
+  <div class="kpi-rows">
+  <section class="section-block">
+    <h3 class="section-title">Encaissements</h3>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap fc"><mat-icon>payments</mat-icon></div>
+        <div class="stat-value">{{ stats()!.total_encaissements_fc | number:'1.0-0' }} <small>FC</small></div>
+        <div class="stat-label">Total encaissé FC</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap usd"><mat-icon>attach_money</mat-icon></div>
+        <div class="stat-value">{{ stats()!.total_encaissements_usd | number:'1.0-0' }} <small>USD</small></div>
+        <div class="stat-label">Total encaissé USD</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap"><mat-icon>receipt_long</mat-icon></div>
+        <div class="stat-value">{{ stats()!.nb_operations }}</div>
+        <div class="stat-label">Opérations totales</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-block">
+    <h3 class="section-title">Trésorerie</h3>
+    <div class="stats-grid treasury">
+      <div class="stat-card">
+        <div class="stat-icon-wrap"><mat-icon>account_balance</mat-icon></div>
+        <div class="stat-value dual">
+          <span>{{ stats()!.solde_main_fc | number:'1.0-0' }} FC</span>
+          <span>{{ stats()!.solde_main_usd | number:'1.0-0' }} USD</span>
+        </div>
+        <div class="stat-label">Caisse principale</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap"><mat-icon>store</mat-icon></div>
+        <div class="stat-value dual">
+          <span>{{ stats()!.solde_agents_fc | number:'1.0-0' }} FC</span>
+          <span>{{ stats()!.solde_agents_usd | number:'1.0-0' }} USD</span>
+        </div>
+        <div class="stat-label">Caisses agents</div>
+      </div>
+      <div class="stat-card" [class.warning]="stats()!.caisses_verrouillees > 0">
+        <div class="stat-icon-wrap warn"><mat-icon>lock</mat-icon></div>
+        <div class="stat-value">{{ stats()!.caisses_verrouillees }}</div>
+        <div class="stat-label">Caisses verrouillées</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap"><mat-icon>people</mat-icon></div>
+        <div class="stat-value">{{ stats()!.nb_agents }}</div>
+        <div class="stat-label">Agents actifs</div>
+      </div>
+    </div>
+  </section>
+  </div>
+
+  <div class="dashboard-main">
+  <div class="charts-row">
+    <mat-card class="panel-card chart-panel">
+      <div class="panel-header">
+        <div>
+          <h3>Encaissements — 7 derniers jours</h3>
+          <p>Évolution FC et USD</p>
+        </div>
+        <mat-icon>show_chart</mat-icon>
+      </div>
+      <mat-card-content>
+        @if (hasEncaissements() && lineChart) {
+          <apx-chart
+            [series]="lineChart.series"
+            [chart]="lineChart.chart"
+            [xaxis]="lineChart.xaxis"
+            [yaxis]="lineChart.yaxis"
+            [stroke]="lineChart.stroke"
+            [tooltip]="lineChart.tooltip"
+            [legend]="lineChart.legend"
+            [dataLabels]="lineChart.dataLabels"
+            [fill]="lineChart.fill"
+            [grid]="lineChart.grid"
+            [colors]="['#1f7a3a', '#b8c926']"
+          />
+        } @else {
+          <div class="empty-state">
+            <mat-icon>bar_chart</mat-icon>
+            <p>Aucun encaissement enregistré sur les 7 derniers jours</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="panel-card chart-panel small">
+      <div class="panel-header">
+        <div>
+          <h3>Répartition FC / USD</h3>
+          <p>Par devise</p>
+        </div>
+        <mat-icon>donut_large</mat-icon>
+      </div>
+      <mat-card-content>
+        @if (hasRepartition() && donutChart) {
+          <apx-chart
+            [series]="donutChart.series"
+            [chart]="donutChart.chart"
+            [labels]="donutChart.labels"
+            [legend]="donutChart.legend"
+            [plotOptions]="donutChart.plotOptions"
+            [dataLabels]="donutChart.dataLabels"
+            [colors]="['#1f7a3a', '#b8c926']"
+          />
+        } @else {
+          <div class="empty-state">
+            <mat-icon>pie_chart</mat-icon>
+            <p>Pas encore de données à afficher</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="charts-row">
+    <mat-card class="panel-card">
+      <div class="panel-header">
+        <div>
+          <h3>Top agents</h3>
+          <p>Performance par agent</p>
+        </div>
+        <mat-icon>leaderboard</mat-icon>
+      </div>
+      <mat-card-content>
+        @if (barChart && stats()!.top_agents.length) {
+          <apx-chart
+            [series]="barChart.series"
+            [chart]="barChart.chart"
+            [xaxis]="barChart.xaxis"
+            [plotOptions]="barChart.plotOptions"
+            [dataLabels]="barChart.dataLabels"
+            [legend]="barChart.legend"
+            [colors]="['#1f7a3a', '#3d9a35']"
+          />
+        } @else {
+          <div class="empty-state">
+            <mat-icon>groups</mat-icon>
+            <p>Aucune activité agent pour le moment</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    @if (stats()!.billetterie_main) {
+      <mat-card class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h3>Billetterie principale</h3>
+            <p>{{ stats()!.billetterie_main!.solde_fc | number:'1.0-0' }} FC · {{ stats()!.billetterie_main!.solde_usd | number:'1.0-0' }} USD</p>
+          </div>
+          <mat-icon>payments</mat-icon>
+        </div>
+        <mat-card-content>
+          @if (hasBilletsMain()) {
+            <div class="billetterie-grid">
+              @for (b of stats()!.billetterie_main!.billets; track b.valeur + b.devise) {
+                @if (b.quantite > 0) {
+                  <div class="billet-chip" [class.usd]="b.devise === 'USD'">
+                    <strong>{{ b.quantite }}×</strong>
+                    <span>{{ b.valeur | number:'1.0-0' }} {{ b.devise }}</span>
+                  </div>
+                }
+              }
+            </div>
+          } @else {
+            <div class="empty-state compact">
+              <mat-icon>money</mat-icon>
+              <p>Caisse principale vide</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <div class="bottom-row">
+    <mat-card class="panel-card">
+      <div class="panel-header">
+        <div>
+          <h3>Caisses agents</h3>
+          <p>État en temps réel</p>
+        </div>
+      </div>
+      <mat-card-content class="table-wrap">
+        @if (stats()!.caisses_agent.length) {
+          <div class="table-responsive">
+            <table mat-table [dataSource]="stats()!.caisses_agent" class="data-table responsive-table">
+              <ng-container matColumnDef="nom">
+                <th mat-header-cell *matHeaderCellDef>Caisse</th>
+                <td mat-cell *matCellDef="let c" data-label="Caisse"><strong>{{ c.nom }}</strong></td>
+              </ng-container>
+              <ng-container matColumnDef="agent">
+                <th mat-header-cell *matHeaderCellDef>Agent</th>
+                <td mat-cell *matCellDef="let c" data-label="Agent">{{ c.agent }}</td>
+              </ng-container>
+              <ng-container matColumnDef="solde">
+                <th mat-header-cell *matHeaderCellDef>Solde</th>
+                <td mat-cell *matCellDef="let c" data-label="Solde">
+                  <span class="amount fc">{{ c.solde_fc | number:'1.0-0' }} FC</span>
+                  <span class="amount usd">{{ c.solde_usd | number:'1.0-0' }} USD</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="status">
+                <th mat-header-cell *matHeaderCellDef>Statut</th>
+                <td mat-cell *matCellDef="let c" data-label="Statut">
+                  @if (c.is_locked) {
+                    <span class="badge locked"><mat-icon>lock</mat-icon> Verrouillée</span>
+                  } @else {
+                    <span class="badge active"><mat-icon>lock_open</mat-icon> Active</span>
+                  }
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="['nom', 'agent', 'solde', 'status']"></tr>
+              <tr mat-row *matRowDef="let row; columns: ['nom', 'agent', 'solde', 'status']"></tr>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-state compact">
+            <mat-icon>account_balance_wallet</mat-icon>
+            <p>Aucune caisse agent configurée</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="panel-card">
+      <div class="panel-header">
+        <div>
+          <h3>Opérations récentes</h3>
+          <p>Dernières transactions</p>
+        </div>
+      </div>
+      <mat-card-content>
+        @if (stats()!.operations_recentes.length) {
+          @for (op of stats()!.operations_recentes; track op.reference) {
+            <div class="recent-op">
+              <div class="op-icon"><mat-icon>receipt</mat-icon></div>
+              <div class="op-info">
+                <strong>{{ op.reference }}</strong>
+                <small>{{ op.agent }}</small>
+              </div>
+              <div class="op-montant">
+                @if (op.montant_fc > 0) { <span class="fc">{{ op.montant_fc | number:'1.0-0' }} FC</span> }
+                @if (op.montant_usd > 0) { <span class="usd">{{ op.montant_usd | number:'1.0-0' }} USD</span> }
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="empty-state compact">
+            <mat-icon>history</mat-icon>
+            <p>Aucune opération récente</p>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+  </div>
+</div>
+}
