@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "http-server dist/optimo360-web/browser -p 4200 --gzip -c-1",
     "build": "ng build",
     "start:prod": "serve browser -s -l tcp://0.0.0.0:${PORT:-4200}",
     "watch": "ng build --watch --configuration development",
