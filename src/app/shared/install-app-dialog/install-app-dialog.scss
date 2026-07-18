@@ -1,0 +1,105 @@
+.install-dialog {
+  &__hero {
+    text-align: center;
+    padding: 8px 8px 0;
+  }
+
+  &__icon-wrap {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 12px;
+    border-radius: 18px;
+    background: var(--optimo-primary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--optimo-shadow-sm);
+  }
+
+  &__logo {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--optimo-text);
+  }
+
+  &__subtitle {
+    margin: 8px 0 0;
+    color: var(--optimo-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+}
+
+.install-section {
+  background: var(--optimo-bg);
+  border: 1px solid var(--optimo-border);
+  border-radius: var(--optimo-radius-sm);
+  padding: 16px;
+  margin-bottom: 12px;
+
+  &--highlight {
+    border-color: color-mix(in srgb, var(--optimo-primary) 35%, var(--optimo-border));
+    background: color-mix(in srgb, var(--optimo-primary-light) 70%, white);
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    mat-icon {
+      color: var(--optimo-primary);
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--optimo-text);
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--optimo-text-muted);
+    line-height: 1.5;
+    font-size: 0.92rem;
+  }
+}
+
+.install-steps {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--optimo-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+
+  li + li {
+    margin-top: 6px;
+  }
+
+  strong {
+    color: var(--optimo-text);
+    font-weight: 600;
+  }
+}
+
+mat-dialog-actions {
+  padding: 8px 16px 16px !important;
+  gap: 8px;
+
+  button mat-icon {
+    margin-right: 4px;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}

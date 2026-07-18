@@ -347,3 +347,8 @@ input:-webkit-autofill:focus {
     width: 105mm;
   }
 }
+
+.install-app-dialog-panel .mat-mdc-dialog-surface {
+  border-radius: var(--optimo-radius);
+  overflow: hidden;
+}

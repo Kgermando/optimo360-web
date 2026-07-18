@@ -1,7 +1,11 @@
 {
-  "name": "optimo360-web",
-  "short_name": "optimo360-web",
+  "name": "Optimo 360 — Gestion de trésorerie",
+  "short_name": "Optimo 360",
+  "description": "Gestion de trésorerie, caisses et encaissements",
   "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f5f8f6",
+  "theme_color": "#3a9b5c",
   "scope": "./",
   "start_url": "./",
   "icons": [

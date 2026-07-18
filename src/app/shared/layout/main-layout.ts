@@ -6,10 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog } from '@angular/material/dialog';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
+import { PwaInstallService } from '../../core/services/pwa-install.service';
 
 interface NavItem {
   label: string;
@@ -44,6 +46,8 @@ const ROLE_LABELS: Record<string, string> = {
 export class MainLayoutComponent {
   auth = inject(AuthService);
   private bp = inject(BreakpointObserver);
+  private dialog = inject(MatDialog);
+  private pwaInstall = inject(PwaInstallService);
 
   user = this.auth.currentUser;
   isMobile = toSignal(
@@ -51,10 +55,21 @@ export class MainLayoutComponent {
     { initialValue: false },
   );
   drawerOpened = signal(true);
+  private installPromptScheduled = false;
 
   constructor() {
     effect(() => {
       this.drawerOpened.set(!this.isMobile());
+    });
+
+    effect(() => {
+      const user = this.user();
+      if (!user || this.installPromptScheduled) {
+        return;
+      }
+
+      this.installPromptScheduled = true;
+      window.setTimeout(() => this.pwaInstall.maybeOpenDialog(this.dialog), 1500);
     });
   }
 
