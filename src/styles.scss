@@ -352,3 +352,15 @@ input:-webkit-autofill:focus {
   border-radius: var(--optimo-radius);
   overflow: hidden;
 }
+
+.app-update-snackbar {
+  .mdc-snackbar__surface {
+    background: var(--optimo-text) !important;
+    color: #fff !important;
+  }
+
+  .mat-mdc-snack-bar-action {
+    color: var(--optimo-accent) !important;
+    font-weight: 600;
+  }
+}
