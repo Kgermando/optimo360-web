@@ -1,0 +1,156 @@
+<div class="join-page">
+  <div class="join-shell">
+    <aside class="join-info">
+      <a routerLink="/login" class="back-link">
+        <mat-icon>arrow_back</mat-icon>
+        Retour à la connexion
+      </a>
+
+      <img src="/images/logo.png" alt="Optimo 360" class="logo" />
+      <h1>Rejoignez Optimo 360</h1>
+      <p class="lead">
+        Décrivez la structure de votre entreprise pour que notre équipe évalue votre éligibilité
+        et configure votre espace de gestion de trésorerie.
+      </p>
+
+      <ul class="checklist">
+        <li><mat-icon>check_circle</mat-icon> Caisses principales et caisses agents</li>
+        <li><mat-icon>check_circle</mat-icon> Encaissements en FC et USD avec billetterie</li>
+        <li><mat-icon>check_circle</mat-icon> Produits, prestations et journal d'audit</li>
+        <li><mat-icon>check_circle</mat-icon> Tableaux de bord et contrôle multi-utilisateurs</li>
+      </ul>
+    </aside>
+
+    <section class="join-card">
+      @if (success()) {
+        <div class="success-state">
+          <mat-icon>mark_email_read</mat-icon>
+          <h2>Demande envoyée</h2>
+          <p>
+            Merci pour votre intérêt. Nous examinerons la structure de votre entreprise et vous
+            contacterons par email sous 48 heures ouvrables.
+          </p>
+          <a mat-flat-button color="primary" routerLink="/login">Retour à la connexion</a>
+        </div>
+      } @else {
+        <h2>Formulaire d'adhésion</h2>
+        <p class="form-intro">Les champs marqués d'un * sont obligatoires.</p>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" [class.was-submitted]="submitted()">
+          <h3>Contact responsable</h3>
+          <div class="field-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom complet</mat-label>
+              <input matInput formControlName="contact_name" />
+              @if (submitted() && form.get('contact_name')?.invalid) {
+                <mat-error>Nom requis</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="field-row two-cols">
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput formControlName="email" type="email" />
+              @if (submitted() && form.get('email')?.invalid) {
+                <mat-error>Email valide requis</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Téléphone</mat-label>
+              <input matInput formControlName="phone" />
+              @if (submitted() && form.get('phone')?.invalid) {
+                <mat-error>Téléphone requis</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-divider />
+
+          <h3>Structure de l'entreprise</h3>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Raison sociale</mat-label>
+            <input matInput formControlName="company_name" />
+            @if (submitted() && form.get('company_name')?.invalid) {
+              <mat-error>Raison sociale requise</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="field-row three-cols">
+            <mat-form-field appearance="outline">
+              <mat-label>RCCM</mat-label>
+              <input matInput formControlName="rccm" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>IDNAT</mat-label>
+              <input matInput formControlName="idnat" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>N° Impôt</mat-label>
+              <input matInput formControlName="nimpot" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Adresse</mat-label>
+            <input matInput formControlName="adresse" />
+            @if (submitted() && form.get('adresse')?.invalid) {
+              <mat-error>Adresse requise</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="field-row two-cols">
+            <mat-form-field appearance="outline">
+              <mat-label>Site web</mat-label>
+              <input matInput formControlName="website" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Secteur d'activité</mat-label>
+              <input matInput formControlName="secteur_activite" />
+            </mat-form-field>
+          </div>
+
+          <div class="field-row two-cols">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre d'employés</mat-label>
+              <input matInput formControlName="nb_employes" type="number" min="0" />
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre de caisses / points de vente</mat-label>
+              <input matInput formControlName="nb_caisses" type="number" min="0" />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Description de votre structure et besoins</mat-label>
+            <textarea
+              matInput
+              formControlName="message"
+              rows="5"
+              placeholder="Décrivez votre organisation, vos flux de trésorerie, le nombre d'agents, vos devises utilisées..."
+            ></textarea>
+            @if (submitted() && form.get('message')?.invalid) {
+              <mat-error>Minimum 20 caractères pour décrire votre structure</mat-error>
+            }
+          </mat-form-field>
+
+          @if (error()) {
+            <div class="error-banner">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          @if (loading()) {
+            <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" disabled>
+              <mat-spinner diameter="20" />
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" class="full-width submit-btn" type="submit">
+              Envoyer ma demande
+            </button>
+          }
+        </form>
+      }
+    </section>
+  </div>
+</div>

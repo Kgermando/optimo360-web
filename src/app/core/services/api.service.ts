@@ -9,6 +9,7 @@ import {
   CreateEntreprisePayload,
   CreateEntrepriseResponse,
   DashboardStats,
+  DemandeAdhesion,
   Entreprise,
   JournalEntry,
   Operation,
@@ -16,6 +17,7 @@ import {
   Parametre,
   Prestation,
   Produit,
+  SubmitAdhesionPayload,
   User,
 } from '../models';
 
@@ -24,6 +26,23 @@ export class ApiService {
   private base = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
+
+  submitAdhesion(data: SubmitAdhesionPayload) {
+    return this.http.post<{ message: string; uuid: string }>(`${this.base}/adhesions`, data);
+  }
+
+  getAdhesions(status?: string) {
+    let params = new HttpParams();
+    if (status) params = params.set('status', status);
+    return this.http.get<DemandeAdhesion[]>(`${this.base}/adhesions`, { params });
+  }
+
+  updateAdhesionStatus(uuid: string, status: string, adminNotes?: string) {
+    return this.http.patch<DemandeAdhesion>(`${this.base}/adhesions/${uuid}/status`, {
+      status,
+      admin_notes: adminNotes,
+    });
+  }
 
   getDashboardStats() {
     return this.http.get<DashboardStats>(`${this.base}/dashboard/stats`);

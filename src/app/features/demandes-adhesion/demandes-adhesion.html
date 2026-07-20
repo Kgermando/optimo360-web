@@ -1,0 +1,80 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Demandes d'adhésion</h1>
+      <p>Examinez les structures des entreprises qui souhaitent rejoindre la plateforme.</p>
+    </div>
+
+    <mat-form-field appearance="outline" class="filter-field">
+      <mat-label>Filtrer par statut</mat-label>
+      <mat-select [value]="filter()" (valueChange)="onFilterChange($event)">
+        <mat-option value="all">Toutes</mat-option>
+        @for (status of statusOptions; track status) {
+          <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </header>
+
+  @if (loading()) {
+    <mat-card class="empty-card">Chargement...</mat-card>
+  } @else if (demandes().length === 0) {
+    <mat-card class="empty-card">
+      <mat-icon>inbox</mat-icon>
+      <p>Aucune demande pour le moment.</p>
+    </mat-card>
+  } @else {
+    <div class="demandes-list">
+      @for (demande of demandes(); track demande.uuid) {
+        <mat-expansion-panel class="demande-panel">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{ demande.company_name }}
+            </mat-panel-title>
+            <mat-panel-description>
+              {{ demande.contact_name }} · {{ demande.email }}
+              <span class="status-chip" [class]="demande.status">{{ statusLabels[demande.status] }}</span>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div class="demande-body">
+            <div class="meta-grid">
+              <div><strong>Téléphone</strong><span>{{ demande.phone }}</span></div>
+              <div><strong>Adresse</strong><span>{{ demande.adresse }}</span></div>
+              <div><strong>RCCM</strong><span>{{ demande.rccm || '—' }}</span></div>
+              <div><strong>IDNAT</strong><span>{{ demande.idnat || '—' }}</span></div>
+              <div><strong>N° Impôt</strong><span>{{ demande.nimpot || '—' }}</span></div>
+              <div><strong>Secteur</strong><span>{{ demande.secteur_activite || '—' }}</span></div>
+              <div><strong>Employés</strong><span>{{ demande.nb_employes }}</span></div>
+              <div><strong>Caisses</strong><span>{{ demande.nb_caisses }}</span></div>
+              <div><strong>Reçue le</strong><span>{{ demande.created_at | date: 'dd/MM/yyyy HH:mm' }}</span></div>
+            </div>
+
+            @if (demande.website) {
+              <p class="website"><strong>Site web :</strong> {{ demande.website }}</p>
+            }
+
+            <div class="message-block">
+              <strong>Description de la structure</strong>
+              <p>{{ demande.message }}</p>
+            </div>
+
+            <div class="actions">
+              <mat-form-field appearance="outline" class="status-field">
+                <mat-label>Statut</mat-label>
+                <mat-select
+                  [value]="demande.status"
+                  (valueChange)="updateStatus(demande, $event)"
+                >
+                  @for (status of statusOptions; track status) {
+                    <mat-option [value]="status">{{ statusLabels[status] }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-expansion-panel>
+      }
+    </div>
+  }
+</div>

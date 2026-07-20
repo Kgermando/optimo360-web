@@ -24,6 +24,45 @@ export interface Entreprise {
   users?: User[];
 }
 
+export type AdhesionStatus = 'pending' | 'reviewed' | 'accepted' | 'rejected';
+
+export interface DemandeAdhesion {
+  uuid: string;
+  created_at: string;
+  updated_at: string;
+  contact_name: string;
+  email: string;
+  phone: string;
+  company_name: string;
+  rccm: string;
+  idnat: string;
+  nimpot: string;
+  adresse: string;
+  website: string;
+  secteur_activite: string;
+  nb_employes: number;
+  nb_caisses: number;
+  message: string;
+  status: AdhesionStatus;
+  admin_notes?: string;
+}
+
+export interface SubmitAdhesionPayload {
+  contact_name: string;
+  email: string;
+  phone: string;
+  company_name: string;
+  rccm?: string;
+  idnat?: string;
+  nimpot?: string;
+  adresse: string;
+  website?: string;
+  secteur_activite?: string;
+  nb_employes?: number;
+  nb_caisses?: number;
+  message: string;
+}
+
 export interface CaisseMain {
   uuid: string;
   nom: string;

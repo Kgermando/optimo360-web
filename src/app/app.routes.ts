@@ -9,6 +9,11 @@ export const routes: Routes = [
     canActivate: [guestGuard],
   },
   {
+    path: 'nous-rejoindre',
+    loadComponent: () => import('./features/nous-rejoindre/nous-rejoindre').then((m) => m.NousRejoindreComponent),
+    canActivate: [guestGuard],
+  },
+  {
     path: '',
     component: MainLayoutComponent,
     canActivate: [authGuard],
@@ -45,6 +50,11 @@ export const routes: Routes = [
       {
         path: 'entreprises',
         loadComponent: () => import('./features/entreprises/entreprises').then((m) => m.EntreprisesComponent),
+        canActivate: [roleGuard('super_admin')],
+      },
+      {
+        path: 'demandes-adhesion',
+        loadComponent: () => import('./features/demandes-adhesion/demandes-adhesion').then((m) => m.DemandesAdhesionComponent),
         canActivate: [roleGuard('super_admin')],
       },
       {

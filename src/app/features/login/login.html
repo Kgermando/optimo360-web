@@ -1,54 +1,126 @@
 <div class="login-page">
-  <div class="login-card">
-    <div class="brand">
-      <img src="/images/logo.png" alt="Optimo 360" class="logo" />
-      <h1>Optimo 360</h1>
-      <p>Gestion de trésorerie multi-devises</p>
-    </div>
+  <div class="login-bg" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+    <span class="grid-pattern"></span>
+  </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" [class.was-submitted]="submitted()">
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" type="email" autocomplete="email" />
-        <mat-icon matPrefix>email</mat-icon>
-        @if (submitted() && form.get('email')?.invalid) {
-          <mat-error>Email valide requis</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Mot de passe</mat-label>
-        <input
-          matInput
-          formControlName="password"
-          [type]="hidePassword() ? 'password' : 'text'"
-          autocomplete="current-password"
-        />
-        <mat-icon matPrefix>lock</mat-icon>
-        <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" tabindex="-1">
-          <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
-        </button>
-        @if (submitted() && form.get('password')?.invalid) {
-          <mat-error>Mot de passe requis</mat-error>
-        }
-      </mat-form-field>
-
-      @if (error()) {
-        <div class="error-banner">
-          <mat-icon>error_outline</mat-icon>
-          <span>{{ error() }}</span>
+  <div class="login-layout">
+    <section class="hero-panel">
+      <div class="hero-inner">
+        <div class="brand-block">
+          <div class="logo-wrap">
+            <img src="/images/logo.png" alt="Optimo 360" class="logo" />
+          </div>
+          <p class="hero-tagline">
+            La plateforme de gestion de trésorerie multi-devises pensée pour les entreprises congolaises.
+          </p>
         </div>
-      }
 
-      @if (loading()) {
-        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" disabled>
-          <mat-spinner diameter="20" />
-        </button>
-      } @else {
-        <button mat-flat-button color="primary" class="full-width submit-btn" type="submit">
-          Se connecter
-        </button>
-      }
-    </form>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <span class="feature-icon"><mat-icon>account_balance_wallet</mat-icon></span>
+            <h3>Caisses hiérarchisées</h3>
+            <p>Principales, agents et transferts sécurisés entre points de vente.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon"><mat-icon>payments</mat-icon></span>
+            <h3>FC &amp; USD</h3>
+            <p>Encaissements, billetterie et soldes en franc congolais et dollars.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon"><mat-icon>inventory_2</mat-icon></span>
+            <h3>Produits &amp; prestations</h3>
+            <p>Catalogue, encaissement au guichet et reçus imprimables.</p>
+          </article>
+          <article class="feature-card">
+            <span class="feature-icon"><mat-icon>verified_user</mat-icon></span>
+            <h3>Contrôle total</h3>
+            <p>OTP, journal d'audit et gestion fine des rôles utilisateurs.</p>
+          </article>
+        </div>
+
+        <div class="join-banner">
+          <div class="join-banner__text">
+            <strong>Votre entreprise n'est pas encore inscrite ?</strong>
+            <span>Décrivez votre structure et demandez une adhésion à la plateforme.</span>
+          </div>
+          <a mat-flat-button class="join-banner__btn" routerLink="/nous-rejoindre">
+            Nous rejoindre
+            <mat-icon>arrow_forward</mat-icon>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-panel">
+      <div class="form-card">
+        <header class="form-header">
+          <p class="form-eyebrow">Espace sécurisé</p>
+          <h2>Bienvenue</h2>
+          <p>Connectez-vous pour accéder à votre tableau de bord et vos caisses.</p>
+        </header>
+
+        <form [formGroup]="form" (ngSubmit)="submit()" [class.was-submitted]="submitted()">
+          <div class="field-group">
+            <label for="login-email">Adresse email</label>
+            <mat-form-field appearance="outline" class="full-width">
+              <input matInput id="login-email" formControlName="email" type="email" autocomplete="email" placeholder="vous@entreprise.cd" />
+              <mat-icon matPrefix>mail_outline</mat-icon>
+              @if (submitted() && form.get('email')?.invalid) {
+                <mat-error>Email valide requis</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="field-group">
+            <label for="login-password">Mot de passe</label>
+            <mat-form-field appearance="outline" class="full-width">
+              <input
+                matInput
+                id="login-password"
+                formControlName="password"
+                [type]="hidePassword() ? 'password' : 'text'"
+                autocomplete="current-password"
+                placeholder="••••••••"
+              />
+              <mat-icon matPrefix>lock_outline</mat-icon>
+              <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())" tabindex="-1" aria-label="Afficher le mot de passe">
+                <mat-icon>{{ hidePassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (submitted() && form.get('password')?.invalid) {
+                <mat-error>Mot de passe requis</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          @if (error()) {
+            <div class="error-banner">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ error() }}</span>
+            </div>
+          }
+
+          @if (loading()) {
+            <button mat-flat-button color="primary" class="full-width submit-btn" type="submit" disabled>
+              <mat-spinner diameter="20" />
+            </button>
+          } @else {
+            <button mat-flat-button color="primary" class="full-width submit-btn" type="submit">
+              Se connecter
+              <mat-icon>login</mat-icon>
+            </button>
+          }
+        </form>
+
+        <footer class="form-footer">
+          <span>Pas encore client ?</span>
+          <a routerLink="/nous-rejoindre">Demander une adhésion</a>
+        </footer>
+      </div>
+
+      <p class="form-copyright">&copy; {{ year }} Optimo 360 — Gestion de trésorerie</p>
+    </section>
   </div>
 </div>

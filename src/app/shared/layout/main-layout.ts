@@ -79,6 +79,7 @@ export class MainLayoutComponent {
     const all: NavItem[] = [
       { label: 'Tableau de bord', icon: 'dashboard', route: '/dashboard', roles: ['super_admin', 'admin', 'manager', 'agent'] },
       { label: 'Entreprises', icon: 'business', route: '/entreprises', roles: ['super_admin'] },
+      { label: 'Demandes adhésion', icon: 'mail', route: '/demandes-adhesion', roles: ['super_admin'] },
       { label: 'Utilisateurs', icon: 'people', route: '/users', roles: ['super_admin', 'admin', 'manager'] },
       { label: 'Journal', icon: 'history', route: '/journal', roles: ['super_admin', 'admin', 'manager'] },
       { label: 'Encaissement', icon: 'point_of_sale', route: '/encaissement', roles: ['agent'] },

@@ -1,6 +1,6 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs/operators';
@@ -28,7 +28,6 @@ const ROLE_LABELS: Record<User['role'], string> = {
 @Component({
   selector: 'app-entreprise-detail',
   imports: [
-    RouterLink,
     ReactiveFormsModule,
     MatCardModule,
     MatButtonModule,
