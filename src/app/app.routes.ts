@@ -48,6 +48,11 @@ export const routes: Routes = [
         canActivate: [roleGuard('super_admin')],
       },
       {
+        path: 'entreprises/:uuid',
+        loadComponent: () => import('./features/entreprises/entreprise-detail').then((m) => m.EntrepriseDetailComponent),
+        canActivate: [roleGuard('super_admin')],
+      },
+      {
         path: 'journal',
         loadComponent: () => import('./features/journal/journal').then((m) => m.JournalComponent),
         canActivate: [roleGuard('super_admin', 'admin', 'manager')],

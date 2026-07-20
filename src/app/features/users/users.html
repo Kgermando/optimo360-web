@@ -1,224 +1,275 @@
 <div class="page-header">
-
   <div class="page-header-top">
-
     <h1>Utilisateurs</h1>
-
-    <div class="page-header-actions">
-
-      <button mat-raised-button color="primary" (click)="showForm.set(!showForm())">
-
-        <mat-icon>person_add</mat-icon>
-
-        <span class="btn-label">Nouvel utilisateur</span>
-
-      </button>
-
-    </div>
-
+    @if (canManageUsers()) {
+      <div class="page-header-actions">
+        <button mat-raised-button color="primary" type="button" (click)="showForm.set(!showForm()); cancelEdit()">
+          <mat-icon>person_add</mat-icon>
+          <span class="btn-label">Nouvel utilisateur</span>
+        </button>
+      </div>
+    }
   </div>
-
   <p>Gestion des comptes @if (isSuperAdmin()) { de toutes les entreprises } @else { de votre entreprise }</p>
 
   @if (isSuperAdmin()) {
-
     <mat-form-field appearance="outline" class="filter-field header-filter">
-
       <mat-label>Filtrer par entreprise</mat-label>
-
       <mat-select [value]="selectedEntreprise()" (selectionChange)="onFilterChange($event.value)">
-
         <mat-option value="">Toutes les entreprises</mat-option>
-
         @for (e of entreprises(); track e.uuid) {
-
           <mat-option [value]="e.uuid">{{ e.name }}</mat-option>
-
         }
-
       </mat-select>
-
     </mat-form-field>
-
   }
-
 </div>
 
-
-
-@if (showForm()) {
-
+@if (showForm() && canManageUsers()) {
   <mat-card class="form-card">
-
     <mat-card-content>
-
+      <div class="panel__title">
+        <mat-icon>person_add</mat-icon>
+        <h3>Nouvel utilisateur</h3>
+      </div>
       <form [formGroup]="form" (ngSubmit)="submit()" class="form-grid">
-
         @if (isSuperAdmin()) {
-
           <mat-form-field appearance="outline">
-
             <mat-label>Entreprise</mat-label>
-
             <mat-select formControlName="entreprise_uuid">
-
               @for (e of entreprises(); track e.uuid) {
-
                 <mat-option [value]="e.uuid">{{ e.name }}</mat-option>
-
               }
-
             </mat-select>
-
           </mat-form-field>
-
         }
-
         <mat-form-field appearance="outline">
-
           <mat-label>Nom complet</mat-label>
-
           <input matInput formControlName="full_name" />
-
         </mat-form-field>
-
         <mat-form-field appearance="outline">
-
           <mat-label>Email</mat-label>
-
           <input matInput formControlName="email" type="email" />
-
         </mat-form-field>
-
         <mat-form-field appearance="outline">
-
           <mat-label>Téléphone</mat-label>
-
           <input matInput formControlName="phone" />
-
         </mat-form-field>
-
         <mat-form-field appearance="outline">
-
           <mat-label>Mot de passe</mat-label>
-
           <input matInput formControlName="password" type="password" />
-
         </mat-form-field>
-
         <mat-form-field appearance="outline">
-
           <mat-label>Rôle</mat-label>
-
           <mat-select formControlName="role">
-
-            @if (isSuperAdmin()) {
-
+            @if (canAssignAdmin()) {
               <mat-option value="admin">Administrateur</mat-option>
-
             }
-
             <mat-option value="manager">Manager</mat-option>
-
             <mat-option value="agent">Agent caisse</mat-option>
-
           </mat-select>
-
         </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-
-          <mat-icon>save</mat-icon> Créer
-
-        </button>
-
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+            <mat-icon>save</mat-icon>
+            Créer
+          </button>
+          <button mat-stroked-button type="button" (click)="showForm.set(false)">Annuler</button>
+        </div>
       </form>
-
     </mat-card-content>
-
   </mat-card>
-
 }
 
+@if (editingUser(); as user) {
+  <mat-card class="form-card form-card--edit">
+    <mat-card-content>
+      <div class="panel__title">
+        <mat-icon>edit</mat-icon>
+        <h3>Modifier {{ user.full_name }}</h3>
+      </div>
+      <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="form-grid">
+        <mat-form-field appearance="outline">
+          <mat-label>Nom complet</mat-label>
+          <input matInput formControlName="full_name" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Téléphone</mat-label>
+          <input matInput formControlName="phone" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Rôle</mat-label>
+          <mat-select formControlName="role">
+            @if (canAssignAdmin()) {
+              <mat-option value="admin">Administrateur</mat-option>
+            }
+            <mat-option value="manager">Manager</mat-option>
+            <mat-option value="agent">Agent caisse</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Statut</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="active">Actif</mat-option>
+            <mat-option value="suspended">Suspendu</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" [disabled]="editForm.invalid">Enregistrer</button>
+          <button mat-stroked-button type="button" (click)="cancelEdit()">Annuler</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+}
 
-
-<div class="table-responsive">
-
-  <table mat-table [dataSource]="users()" class="data-table responsive-table">
-
-    <ng-container matColumnDef="full_name">
-
-      <th mat-header-cell *matHeaderCellDef>Nom</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Nom">{{ u.full_name }}</td>
-
-    </ng-container>
-
-    <ng-container matColumnDef="email">
-
-      <th mat-header-cell *matHeaderCellDef>Email</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Email">{{ u.email }}</td>
-
-    </ng-container>
-
-    <ng-container matColumnDef="entreprise">
-
-      <th mat-header-cell *matHeaderCellDef>Entreprise</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Entreprise">{{ getEntrepriseName(u.entreprise_uuid) }}</td>
-
-    </ng-container>
-
-    <ng-container matColumnDef="role">
-
-      <th mat-header-cell *matHeaderCellDef>Rôle</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Rôle">
-
-        <mat-chip>{{ u.role | uppercase }}</mat-chip>
-
-      </td>
-
-    </ng-container>
-
-    <ng-container matColumnDef="status">
-
-      <th mat-header-cell *matHeaderCellDef>Statut</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Statut">
-
-        <span [class]="u.status === 'active' ? 'status-active' : 'status-suspended'">
-
-          {{ u.status }}
-
-        </span>
-
-      </td>
-
-    </ng-container>
-
-    <ng-container matColumnDef="actions">
-
-      <th mat-header-cell *matHeaderCellDef>Actions</th>
-
-      <td mat-cell *matCellDef="let u" data-label="Actions">
-
-        <button mat-icon-button (click)="toggleStatus(u)" [title]="u.status === 'active' ? 'Suspendre' : 'Activer'">
-
-          <mat-icon>{{ u.status === 'active' ? 'block' : 'check_circle' }}</mat-icon>
-
+<mat-card class="users-list-card">
+  <mat-card-content>
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Rechercher un utilisateur</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [value]="userSearch()" (input)="userSearch.set($any($event.target).value)" placeholder="Nom, email, entreprise…" />
+      @if (userSearch()) {
+        <button mat-icon-button matSuffix type="button" (click)="userSearch.set('')" aria-label="Effacer">
+          <mat-icon>close</mat-icon>
         </button>
+      }
+    </mat-form-field>
 
-      </td>
+    @if (filteredUsers().length) {
+      @if (isMobile()) {
+        <div class="users-mobile-list">
+          @for (u of filteredUsers(); track u.uuid) {
+            <article class="user-card" [class.user-card--editing]="editingUser()?.uuid === u.uuid">
+              <div class="user-card__header">
+                <div class="user-cell">
+                  <div class="user-avatar">{{ u.full_name.charAt(0) }}</div>
+                  <div class="user-card__identity">
+                    <strong class="user-name">{{ u.full_name }}</strong>
+                    <div class="user-card__badges">
+                      <span [class]="roleChipClass(u.role)">{{ roleLabel(u.role) }}</span>
+                      <span class="status-badge" [class.status-badge--active]="u.status === 'active'" [class.status-badge--suspended]="u.status !== 'active'">
+                        {{ statusLabel(u.status) }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-    </ng-container>
+              <div class="user-card__details">
+                <div class="user-card__row">
+                  <span class="user-card__label">Email</span>
+                  <a class="contact-link" [href]="'mailto:' + u.email">{{ u.email }}</a>
+                </div>
+                @if (u.phone) {
+                  <div class="user-card__row">
+                    <span class="user-card__label">Téléphone</span>
+                    <a class="contact-link" [href]="'tel:' + u.phone">{{ u.phone }}</a>
+                  </div>
+                }
+                @if (isSuperAdmin()) {
+                  <div class="user-card__row">
+                    <span class="user-card__label">Entreprise</span>
+                    <span class="user-card__value">{{ getEntrepriseName(u.entreprise_uuid) }}</span>
+                  </div>
+                }
+              </div>
 
-    <tr mat-header-row *matHeaderRowDef="columns()"></tr>
-
-    <tr mat-row *matRowDef="let row; columns: columns()"></tr>
-
-  </table>
-
-</div>
-
+              @if (canManageUsers()) {
+                <div class="user-card__actions">
+                  <button mat-stroked-button color="primary" type="button" (click)="startEdit(u)">
+                    <mat-icon>edit</mat-icon>
+                    Modifier
+                  </button>
+                  <button mat-stroked-button type="button" (click)="toggleStatus(u)">
+                    <mat-icon>{{ u.status === 'active' ? 'block' : 'check_circle' }}</mat-icon>
+                    {{ u.status === 'active' ? 'Suspendre' : 'Activer' }}
+                  </button>
+                  <button mat-stroked-button color="warn" type="button" (click)="deleteUser(u)">
+                    <mat-icon>delete</mat-icon>
+                    Supprimer
+                  </button>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="table-responsive users-table-wrap">
+          <table mat-table [dataSource]="filteredUsers()" class="data-table users-table">
+            <ng-container matColumnDef="full_name">
+              <th mat-header-cell *matHeaderCellDef>Utilisateur</th>
+              <td mat-cell *matCellDef="let u">
+                <div class="user-cell">
+                  <div class="user-avatar">{{ u.full_name.charAt(0) }}</div>
+                  <span class="user-name">{{ u.full_name }}</span>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="email">
+              <th mat-header-cell *matHeaderCellDef>Email</th>
+              <td mat-cell *matCellDef="let u">
+                <a class="contact-link" [href]="'mailto:' + u.email">{{ u.email }}</a>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="entreprise">
+              <th mat-header-cell *matHeaderCellDef>Entreprise</th>
+              <td mat-cell *matCellDef="let u">{{ getEntrepriseName(u.entreprise_uuid) }}</td>
+            </ng-container>
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Rôle</th>
+              <td mat-cell *matCellDef="let u">
+                <span [class]="roleChipClass(u.role)">{{ roleLabel(u.role) }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-header-cell *matHeaderCellDef>Statut</th>
+              <td mat-cell *matCellDef="let u">
+                <span class="status-badge status-badge--sm" [class.status-badge--active]="u.status === 'active'" [class.status-badge--suspended]="u.status !== 'active'">
+                  {{ statusLabel(u.status) }}
+                </span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let u">
+                @if (canManageUsers()) {
+                  <div class="action-group">
+                    <button mat-icon-button color="primary" type="button" (click)="startEdit(u)" matTooltip="Modifier">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button" (click)="toggleStatus(u)" [matTooltip]="u.status === 'active' ? 'Suspendre' : 'Activer'">
+                      <mat-icon>{{ u.status === 'active' ? 'block' : 'check_circle' }}</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" type="button" (click)="deleteUser(u)" matTooltip="Supprimer">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                } @else {
+                  <span class="no-action">—</span>
+                }
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="columns()"></tr>
+            <tr mat-row *matRowDef="let row; columns: columns()" [class.row-editing]="editingUser()?.uuid === row.uuid"></tr>
+          </table>
+        </div>
+      }
+    } @else if (users().length) {
+      <div class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <p>Aucun utilisateur ne correspond à votre recherche.</p>
+        <button mat-stroked-button type="button" (click)="userSearch.set('')">Effacer la recherche</button>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mat-icon>group_off</mat-icon>
+        <p>Aucun utilisateur trouvé.</p>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

@@ -32,8 +32,17 @@ export class ApiService {
   getEntreprises() {
     return this.http.get<Entreprise[]>(`${this.base}/entreprises`);
   }
+  getEntreprise(uuid: string) {
+    return this.http.get<Entreprise>(`${this.base}/entreprises/${uuid}`);
+  }
   createEntreprise(data: CreateEntreprisePayload) {
     return this.http.post<CreateEntrepriseResponse>(`${this.base}/entreprises`, data);
+  }
+  updateEntreprise(uuid: string, data: Partial<Entreprise>) {
+    return this.http.put<Entreprise>(`${this.base}/entreprises/${uuid}`, data);
+  }
+  deleteEntreprise(uuid: string) {
+    return this.http.delete(`${this.base}/entreprises/${uuid}`);
   }
 
   getUsers(entrepriseUuid?: string) {
@@ -43,6 +52,12 @@ export class ApiService {
   }
   createUser(data: Partial<User> & { password: string }) {
     return this.http.post<User>(`${this.base}/users`, data);
+  }
+  updateUser(uuid: string, data: Partial<User>) {
+    return this.http.put<User>(`${this.base}/users/${uuid}`, data);
+  }
+  deleteUser(uuid: string) {
+    return this.http.delete(`${this.base}/users/${uuid}`);
   }
   updateUserStatus(uuid: string, status: string) {
     return this.http.patch(`${this.base}/users/${uuid}/status`, { status });

@@ -17,3 +17,26 @@ h3 {  color: var(--optimo-primary);
 mat-divider {
   margin: 16px 0;
 }
+.action-group {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.edit-card {
+  margin-bottom: 16px;
+}
+.form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Make action icon buttons consistent size and spacing */
+.action-group .mat-icon-button {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+}
+.action-group .mat-icon-button mat-icon {
+  font-size: 18px;
+}

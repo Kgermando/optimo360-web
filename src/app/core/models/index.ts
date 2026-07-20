@@ -21,6 +21,7 @@ export interface Entreprise {
   website?: string;
   logo?: string;
   status: string;
+  users?: User[];
 }
 
 export interface CaisseMain {

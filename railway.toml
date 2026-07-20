@@ -1,12 +1,8 @@
 [build]
-builder = "NIXPACKS"
-
-[build.env]
-NIXPACKS_NODE_VERSION = "22"
-NPM_CONFIG_PRODUCTION = "false"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "node scripts/start-prod.mjs"
 healthcheckPath = "/health"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
